@@ -44,10 +44,10 @@ class MaskedVariableCircularBokeh: CIFilter
     var inputMaxBokehRadius: CGFloat = 20
     var inputBlurRadius: CGFloat = 2
     
-    override var attributes: [String : AnyObject]
+    override var attributes: [String : Any]
     {
         return [
-            kCIAttributeFilterDisplayName: displayName(),
+            kCIAttributeFilterDisplayName: displayName() as AnyObject,
             
             "inputImage": [kCIAttributeIdentity: 0,
                 kCIAttributeClass: "CIImage",
@@ -127,15 +127,15 @@ class MaskedVariableCircularBokeh: CIFilter
     
     override var outputImage: CIImage!
     {
-        guard let inputImage = inputImage, inputBlurMask = inputBokehMask else
+        guard let inputImage = inputImage, let inputBlurMask = inputBokehMask else
         {
             return nil
         }
         
         let extent = inputImage.extent
         
-        let blur = maskedVariableBokeh.applyWithExtent(
-            inputImage.extent,
+        let blur = maskedVariableBokeh.apply(
+            withExtent: inputImage.extent,
             roiCallback:
             {
                 (index, rect) in
@@ -144,8 +144,8 @@ class MaskedVariableCircularBokeh: CIFilter
             arguments: [inputImage, inputBlurMask, inputMaxBokehRadius])
         
         return blur!
-            .imageByApplyingFilter("CIMaskedVariableBlur", withInputParameters: ["inputMask": inputBlurMask, "inputRadius": inputBlurRadius])
-            .imageByCroppingToRect(extent)
+            .applyingFilter("CIMaskedVariableBlur", withInputParameters: ["inputMask": inputBlurMask, "inputRadius": inputBlurRadius])
+            .cropping(to: extent)
     }
 }
 
@@ -157,7 +157,7 @@ class MaskedVariableCircularBokeh: CIFilter
     
     class HexagonalBokehFilter: CIFilter, MetalRenderable
     {
-        override var attributes: [String : AnyObject]
+        override var attributes: [String : Any]
         {
             return [
                 kCIAttributeFilterDisplayName: "Hexagonal Bokeh",
@@ -254,9 +254,9 @@ class MaskedVariableCircularBokeh: CIFilter
         override var outputImage: CIImage?
         {
             guard let inputImage = inputImage,
-                inputTexture = sourceTexture,
-                outputTexture = destinationTexture,
-                intermediateTexture = intermediateTexture else
+                let inputTexture = sourceTexture,
+                let outputTexture = destinationTexture,
+                let intermediateTexture = intermediateTexture else
             {
                 return nil
             }
