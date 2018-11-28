@@ -494,8 +494,10 @@ class HistogramSpecification: CIFilter, VImageFilter
         let redPointer = UnsafePointer<vImagePixelCount>(red)
         let greenPointer = UnsafePointer<vImagePixelCount>(green)
         let bluePointer = UnsafePointer<vImagePixelCount>(blue)
+
+        let rgbaArray = [redPointer, greenPointer, bluePointer, alphaPointer] as [UnsafePointer<vImagePixelCount>?]
         
-        let rgbaMutablePointer = UnsafeMutablePointer<UnsafePointer<vImagePixelCount>?>(mutating: [redPointer, greenPointer, bluePointer, alphaPointer])
+        let rgbaMutablePointer = UnsafeMutablePointer<UnsafePointer<vImagePixelCount>?>(mutating: rgbaArray)
         
         vImageHistogramSpecification_ARGB8888(&imageBuffer, &outBuffer, rgbaMutablePointer, UInt32(kvImageNoFlags))
         
